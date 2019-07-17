@@ -1,0 +1,74 @@
+@import "fonts"
+@import "libs"
+@import "vars"
+@import "media"
+// @import "media-queries"
+
+*
+	-webkit-box-sizing: border-box
+	-moz-box-sizing: border-box
+	box-sizing: border-box
+	&:before, &:after
+		-webkit-box-sizing: border-box
+		-moz-box-sizing: border-box
+		box-sizing: border-box
+
+*::-webkit-input-placeholder
+	color: #fff
+	opacity: 1
+
+*:-moz-placeholder
+	color: #fff
+	opacity: 1
+
+*::-moz-placeholder
+	color: #fff
+	opacity: 1
+
+*:-ms-input-placeholder
+	color: #fff
+	opacity: 1
+
+*::-webkit-scrollbar
+	display: none
+
+input,textarea
+	border: none
+	border-radius: $radius
+	font-family: $default-font
+	font-size: 1.4rem
+	outline: none
+textarea
+	resize: none
+
+html, body
+	height: 100%
+	// width: 100%
+
+html
+  font-size: 10px
+
+body
+	font-size: 1.8rem
+	line-height: 2
+	overflow-x: hidden
+	background-color: #fff
+	position: relative
+	color: $default-text-color
+	font-family: $default-font
+	margin: 0
+	a
+		text-decoration: none
+		&:hover
+			text-decoration: none
+  img
+    max-width: 100%
+    height: auto
+
+h1, h3, p
+	margin: 0
+
+button
+	cursor: pointer
+	&:focus
+		outline: none
