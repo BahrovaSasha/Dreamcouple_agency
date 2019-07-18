@@ -91,11 +91,12 @@ gulp.task('sass', function(){ // Создаем таск Sass
         .pipe(browserSync.reload({stream: true})) // Обновляем CSS на странице при изменении
 });
 
-gulp.task('watch', gulp.parallel('sass', 'scripts', 'browser-sync', function() {
+gulp.task('watch', gulp.series('sass', 'scripts', 'browser-sync', function(done) {
 	gulp.watch('app/sass/**/*.sass', gulp.series('sass'));
 	gulp.watch('libs/**/*.js', gulp.series('scripts'));
 	gulp.watch('app/js/common.js', gulp.series('scripts'));
 	gulp.watch('app/*.html', browserSync.reload);
+    done();
 }));
 
 gulp.task('imagemin', function() {
