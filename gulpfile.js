@@ -1,7 +1,7 @@
 var gulp           = require('gulp'),
     gutil          = require('gulp-util' ),
     sass           = require('gulp-sass'),
-    browserSync    = require('browser-sync'),
+    browserSync    = require('browser-sync').create(),
     concat         = require('gulp-concat'),
     uglify         = require('gulp-uglify'),
     // cleanCSS       = require('gulp-clean-css'),
@@ -15,36 +15,40 @@ var gulp           = require('gulp'),
 var plumber = require('gulp-plumber');
 
 
+// gulp.task('browserSync', function(done) {
+//     browserSync.init(config);
+//     done();
+// });
 
-// Скрипты проекта
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        server: {
+            baseDir: 'app'
+        },
+        notify: false,
+    });
+    gulp.watch('*.html').on('change', browserSync.reload);
+});
 
-gulp.task('common-js', function() {
+
+/*gulp.task('common-js', function() {
 	return gulp.src([
 		'app/js/common.js',
 		])
 	.pipe(concat('common.js'))
 	// .pipe(uglify())
 	.pipe(gulp.dest('app/js'));
-});
+});*/
 
-gulp.task('scripts', gulp.series('common-js', function() {
+gulp.task('scripts', function() {
 	return gulp.src([
 		'app/libs/jquery-3.3.1/jquery-3.3.1.min.js',
-        // 'app/libs/PagePiling/jquery.pagepiling.min.js',
         'app/libs/slick-1.8.1/slick/slick.min.js'
-		// //datepicker scripts
-		// 'app/libs/air-datepicker/dist/js/datepicker.min.js',
-		// 'app/libs/datepicker/datepicker.en.js',
-		// //datepicker end
-		// 'app/libs/slick-1.8.1/slick/slick.min.js',
-		// 'app/libs/magnific-popup/jquery.magnific-popup.min.js',
-		// 'app/js/common.js', // Всегда в конце
 		])
 	.pipe(concat('scripts.min.js'))
-	// .pipe(uglify()) // Минимизировать весь js (на выбор)
 	.pipe(gulp.dest('app/js'))
-	.pipe(browserSync.reload({stream: true}));
-}));
+	.pipe(browserSync.stream());
+});
 
 
 
@@ -62,16 +66,6 @@ gulp.task('scripts', gulp.series('common-js', function() {
 // } );
 
 
-gulp.task('browser-sync', function() {
-	browserSync({
-		server: {
-			baseDir: 'app'
-		},
-		notify: false,
-		// tunnel: true,
-		// tunnel: "projectmane", //Demonstration page: http://projectmane.localtunnel.me
-	});
-});
 
 // gulp.task('sass', function() {
 // 	return gulp.src('app/sass/**/*.sass')
@@ -83,28 +77,27 @@ gulp.task('browser-sync', function() {
 // 	.pipe(browserSync.reload({stream: true}));
 // });
 gulp.task('sass', function(){ // Создаем таск Sass
-    return gulp.src('app/sass/**/*.sass') // Берем источник
+    return gulp.src('app/sass/**/*.sass')// Берем источник
         .pipe(plumber())
         .pipe(sass()) // Преобразуем Sass в CSS посредством gulp-sass
         .pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true })) // Создаем префиксы
         .pipe(gulp.dest('app/css')) // Выгружаем результата в папку app/css
-        .pipe(browserSync.reload({stream: true})) // Обновляем CSS на странице при изменении
+        .pipe(browserSync.stream()); // Обновляем CSS на странице при изменении
 });
 
-gulp.task('watch', gulp.series('sass', 'scripts', 'browser-sync', function(done) {
+gulp.task('watch', gulp.series('sass', 'scripts','browser-sync', function() {
 	gulp.watch('app/sass/**/*.sass', gulp.series('sass'));
 	gulp.watch('libs/**/*.js', gulp.series('scripts'));
 	gulp.watch('app/js/common.js', gulp.series('scripts'));
 	gulp.watch('app/*.html', browserSync.reload);
-    done();
 }));
 
 gulp.task('imagemin', function() {
 	return gulp.src('app/img/**/*')
 	.pipe(cache(imagemin()))
-	.pipe(gulp.dest('dist/img'));
+	// .pipe(gulp.dest('dist/img'));
 });
-gulp.task('build',function(k){
+gulp.task('build',function(){
 	gulp.parallel(
         'removedist',
 		'imagemin',
@@ -112,9 +105,9 @@ gulp.task('build',function(k){
 		'scripts'
 	)
 });
-var k = function(){
+/*var k = function(){
     var buildFiles = gulp.src([
-        'app/*.html',
+        'app/!*.html',
         'app/.htaccess',
     ]).pipe(gulp.dest('dist'));
 
@@ -129,11 +122,12 @@ var k = function(){
     ]).pipe(gulp.dest('dist/js'));
 
     var buildFonts = gulp.src([
-        'app/fonts/**/*',
+        'app/fonts/!**!/!*',
     ])
         .pipe(plumber())
         .pipe(gulp.dest('dist/fonts'));
-};
+    // done();
+};*/
 /*gulp.task('build', gulp.parallel('removedist', 'imagemin', 'sass', 'scripts', function() {
 
 	var buildFiles = gulp.src([
@@ -159,6 +153,7 @@ var k = function(){
 
 }));*/
 
+/*
 gulp.task('deploy', function() {
 
 	var conn = ftp.create({
@@ -170,16 +165,17 @@ gulp.task('deploy', function() {
 	});
 
 	var globs = [
-	'dist/**',
+	'dist/!**',
 	'dist/.htaccess',
 	];
 	return gulp.src(globs, {buffer: false})
 	.pipe(conn.dest('/path/to/folder/on/server'));
 
 });
+*/
 
 
-gulp.task('removedist', function() { return del.sync('dist'); });
+// gulp.task('removedist', function() { return del.sync('dist'); });
 gulp.task('clearcache', function () { return cache.clearAll(); });
 
-gulp.task('default', gulp.parallel('watch'));
+gulp.task('default', gulp.series('watch'));
